@@ -4,7 +4,7 @@ const user = require('../models/user');
 const NotFoundError = require('../errors/not-found-err');
 const DataError = require('../errors/data-err');
 const TokenError = require('../errors/token-err');
-const ExistingEmailError = require('../errors/existing-email-err');
+const ExistingEmailError = require('../errors/email-err');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
