@@ -5,7 +5,7 @@ const isEmail = require('validator/lib/isEmail');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    default: 'Дарья',
+    required: [true, 'Поле "name" должно быть заполнено'],
     minlength: 2,
     maxlength: 30,
   },
