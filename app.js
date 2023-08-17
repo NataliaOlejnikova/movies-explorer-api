@@ -11,10 +11,10 @@ const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
 const app = express();
 
-async function main() {
-  await mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    autoIndex: true,
   });
 
   app.use(cors());
@@ -26,22 +26,11 @@ async function main() {
   app.use(routes);
 
   app.use(errorLogger);
-
+  
   app.use(errors());
+  
+  app.use(errorHandle);
 
-  app.use((err, req, res, next) => {
-    const { statusCode = 500, message } = err;
-    res
-      .status(statusCode)
-      .send({
-        message: statusCode === 500
-          ? 'На сервере произошла ошибка'
-          : message,
-      });
-    next();
+  app.listen(PORT, () => {
+    console.log('App listening on port ${PORT}');
   });
-
-  await app.listen(PORT);
-}
-
-main();
