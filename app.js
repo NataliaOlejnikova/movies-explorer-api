@@ -1,36 +1,41 @@
-const express = require('express');
-const mongoose = require('mongoose');
 require('dotenv').config();
+
+const express = require('express');
+
+const app = express();
+const mongoose = require('mongoose');
+const helmet = require('helmet');
 const cors = require('cors');
 const { errors } = require('celebrate');
-const { routes } = require('./routes');
-const { limiter } = require('./middlewares/limiter');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const routes = require('./routes');
+const errorHandle = require('./errors/handle-errors');
 
 const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
-const app = express();
-
 mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    autoIndex: true,
-  });
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  autoIndex: true,
+});
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
-  app.use(cors());
 
-  app.use(requestLogger);
+app.use(cors());
 
-  app.use(limiter);
+app.use(requestLogger);
 
-  app.use(routes);
+app.use(express.json());
 
-  app.use(errorLogger);
-  
-  app.use(errors());
-  
-  app.use(errorHandle);
+app.use('/', routes);
 
-  app.listen(PORT, () => {
-    console.log('App listening on port ${PORT}');
-  });
+app.use(helmet());
+
+app.use(errorLogger);
+
+app.use(errors());
+
+app.use(errorHandle);
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});

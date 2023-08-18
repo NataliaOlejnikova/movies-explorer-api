@@ -1,4 +1,4 @@
-const { mongoose, ObjectId } = require('mongoose');
+const { mongoose, ObjectId} = require('mongoose');
 const isURL = require('validator/lib/isURL');
 
 const movieSchema = new mongoose.Schema({

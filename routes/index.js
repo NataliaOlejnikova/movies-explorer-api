@@ -1,34 +1,29 @@
+const routes = require('express').Router();
 const express = require('express');
+const auth = require('../middlewares/auth');
+const usersRouter = require('./user');
+const movieRouter = require('./movie');
 
 const {
   login,
   createUser,
 } = require('../controllers/user');
 
-const auth = require('../middlewares/auth');
 const {
   signUpValidation,
   signInValidation,
 } = require('../middlewares/validatons');
-
-const { userRoutes } = require('./user');
-
-const { moviesRoutes } = require('./movie');
-
-const routes = express.Router();
 
 const NotFoundError = require('../errors/not-found-err');
 
 routes.post('/signup', express.json(), signUpValidation, createUser);
 routes.post('/signin', express.json(), signInValidation, login);
 
-routes.use(auth);
+routes.use('/users', auth, usersRouter);
+routes.use('/movies', auth, movieRouter);
 
-routes.use('/users', userRoutes);
-routes.use('/movies', moviesRoutes);
-
-routes.use('/', (req, res, next) => {
-  next(new NotFoundError('Страница по указанному маршруту не найдена'));
+routes.use('*', auth, (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый URL не существует'));
 });
 
-exports.routes = routes;
+module.exports = routes;
