@@ -4,15 +4,12 @@ const NotFoundError = require('../errors/not-found-err');
 const DataError = require('../errors/data-err');
 const DeleteCardError = require('../errors/delete-card-err');
 
-exports.getMovies = async (req, res, next) => {
-  try {
-    const movies = await movie.find({});
-    res.status(200).send(movies);
-  } catch (err) {
-    next(err);
-  }
+module.exports.getMovies = (req, res, next) => {
+  const { _id } = req.user;
+  movie.find({ owner: _id })
+    .then((movies) => res.send(movies))
+    .catch(next);
 };
-
 exports.deleteMovieById = (req, res, next) => {
   const ownerId = req.user._id;
   movie.findById(req.params.userMovieId)
