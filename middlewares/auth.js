@@ -1,25 +1,30 @@
 const jwt = require('jsonwebtoken');
-const TokenError = require('../errors/token-err');
+const { JWT_SECRET, COOKIE_KEY } = require('../config/settings');
+const { UnauthorizedError } = require('../utils/errors/401-Unauthorized');
 
-require('dotenv').config();
-
-const { NODE_ENV, JWT_SECRET } = process.env;
-const extractBearerToken = (header) => header.replace('Bearer ', '');
-
-module.exports = (req, res, next) => {
+const authMiddleware = (req, _, next) => {
   const { authorization } = req.headers;
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new TokenError('Ошибка авторизации: неправильная почта или логин');
+  let token = authorization ? authorization.replace('Bearer ', '') : null;
+
+  if (!token) {
+    if (req.cookies && COOKIE_KEY in req.cookies) {
+      token = req.cookies[COOKIE_KEY];
+    } else {
+      return next(new UnauthorizedError('Необходима авторизация'));
+    }
   }
-  const token = extractBearerToken(authorization);
+
   let payload;
+
   try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+    payload = jwt.verify(token, JWT_SECRET);
   } catch (err) {
-    throw new TokenError('Ошибка авторизации: не получилось верифицировать токен');
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
 
-  req.user = payload;
+  req.user = payload; // записываем пейлоуд в объект запроса
 
-  next();
+  return next(); // пропускаем запрос дальше
 };
+
+module.exports = authMiddleware;

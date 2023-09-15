@@ -1,30 +1,17 @@
-const routes = require('express').Router();
-const express = require('express');
+const router = require('express').Router();
+const { createUser, login, signOut } = require('../controllers/users');
 const auth = require('../middlewares/auth');
-const usersRouter = require('./user');
-const movieRouter = require('./movie');
+const { NotFoundError } = require('../utils/errors/404-NotFound');
+const { validateCreateUser, validateLogin } = require('../middlewares/validation');
 
-const {
-  login,
-  createUser,
-} = require('../controllers/user');
+router.use('/users', auth, require('./users'));
+router.use('/movies', auth, require('./movies'));
 
-const {
-  signUpValidation,
-  signInValidation,
-} = require('../middlewares/validatons');
+router.use('/signout', signOut);
+router.use('/signup', validateCreateUser, createUser);
+router.use('/signin', validateLogin, login);
 
-const NotFoundError = require('../errors/not-found-err');
-
-routes.post('/signup', express.json(), signUpValidation, createUser);
-routes.post('/signin', express.json(), signInValidation, login);
-
-routes.use('/users', auth, usersRouter);
-routes.use('/movies', auth, movieRouter);
-
-
-routes.use('*', auth, (req, res, next) => {
-  next(new NotFoundError('Запрашиваемый URL не существует'));
+router.use('*', auth, () => {
+  throw new NotFoundError('Не найдено');
 });
-
-module.exports = routes;
+module.exports = router;

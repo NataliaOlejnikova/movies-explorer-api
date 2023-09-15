@@ -1,41 +1,34 @@
-require('dotenv').config();
-
+const { errors } = require('celebrate');
 const express = require('express');
-
-const app = express();
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
-const { errors } = require('celebrate');
-const routes = require('./routes');
-const errorHandle = require('./errors/handle-errors');
-
-const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
-
-mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  autoIndex: true,
-});
+const {
+  PORT,
+  ORIGINS,
+  MONGO_DB,
+  LIMITER,
+} = require('./config/settings');
+const errorHandler = require('./middlewares/errorHandler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const router = require('./routes');
+const cookieParser = require('cookie-parser');
 
+mongoose.set('strictQuery', false);
+mongoose.connect(MONGO_DB);
 
-app.use(cors());
+const app = express();
 
-app.use(requestLogger);
-
+app.use(cors({ origin: ORIGINS }));
 app.use(express.json());
-
-app.use('/', routes);
-
+app.use(requestLogger);
+app.use(LIMITER); // AntiDOS for all requests
 app.use(helmet());
+app.use(cookieParser());
 
+app.use(router);
 app.use(errorLogger);
-
 app.use(errors());
+app.use(errorHandler);
 
-app.use(errorHandle);
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log('Server started on port:', PORT));
