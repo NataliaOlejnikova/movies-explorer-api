@@ -12,7 +12,7 @@ const errorHandle = require('./errors/handle-errors');
 
 const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
-mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'https://api.nomoreparties.co/beatfilm-movies', {
+mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://api.nomoreparties.co/beatfilm-movies', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   autoIndex: true,
