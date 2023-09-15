@@ -15,6 +15,6 @@ moviesRoutes.get('/', getMovies);
 
 moviesRoutes.post('/', express.json(), createMovieValidation, createMovie);
 
-moviesRoutes.delete('/_id', express.json(), validateUserMovieId, deleteMovieById);
+moviesRoutes.delete('/:userMovieId', express.json(), validateUserMovieId, deleteMovieById);
 
 module.exports = moviesRoutes;
