@@ -1,50 +1,41 @@
-/* eslint-disable import/no-extraneous-dependencies */
-// app
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const helmet = require('helmet');
-const cookieParser = require('cookie-parser');
-const { errors } = require('celebrate');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const errorHandler = require('./errors/errorHandler');
-
 require('dotenv').config();
 
-const { PORT = 3000, DATABASE = 'mongodb://127.0.0.1:27017/moviesdb' } = process.env;
+const express = require('express');
 
 const app = express();
+const mongoose = require('mongoose');
+const helmet = require('helmet');
+const cors = require('cors');
+const { errors } = require('celebrate');
 const routes = require('./routes');
-const limiter = require('./middlewares/limiter');
-const cors = require('./middlewares/cors');
-const { errorMessages } = require('./utils/constants');
+const errorHandle = require('./errors/handle-errors');
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(helmet());
+const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
-app.use(cors);
-
-mongoose.connect(DATABASE, {
-  useUnifiedTopology: true,
+mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
   autoIndex: true,
 });
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
+
+app.use(cors());
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error(errorMessages.crash);
-  }, 0);
-});
+app.use(express.json());
 
-app.use('/', limiter);
+app.use('/', routes);
 
-routes(app);
+app.use(helmet());
 
-// обработка ошибок
 app.use(errorLogger);
+
 app.use(errors());
-app.use(errorHandler);
+
+app.use(errorHandle);
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});

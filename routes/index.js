@@ -1,20 +1,31 @@
-// index routers
-const users = require('./users');
-const movies = require('./movies');
-const authorization = require('./authorization');
+const routes = require('express').Router();
+const express = require('express');
 const auth = require('../middlewares/auth');
-const NotFoundError = require('../errors/NotFoundError');
-const { errorMessages } = require('../utils/constants');
+const usersRouter = require('./user');
+const movieRouter = require('./movie');
 
-module.exports = function (app) {
-  app.use('/', authorization);
+const {
+  login,
+  createUser,
+} = require('../controllers/user');
 
-  app.use(auth);
+const {
+  signUpValidation,
+  signInValidation,
+} = require('../middlewares/validatons');
 
-  app.use('/users', users);
-  app.use('/movies', movies);
+const NotFoundError = require('../errors/not-found-err');
 
-  app.all('*', (req, res, next) => {
-    next(new NotFoundError(errorMessages.incorrectPath));
-  });
-};
+routes.post('/signup', express.json(), signUpValidation, createUser);
+routes.post('/signin', express.json(), signInValidation, login);
+
+routes.use('/users', auth, usersRouter);
+routes.use('/movies', auth, movieRouter);
+
+routes.use('/signout', logout);
+
+routes.use('*', auth, (req, res, next) => {
+  next(new NotFoundError('Запрашиваемый URL не существует'));
+});
+
+module.exports = routes;
