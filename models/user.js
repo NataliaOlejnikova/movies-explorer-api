@@ -17,7 +17,7 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, 'Поле "password" должно быть заполнено'],
-      select: false, // необходимо добавить поле select
+      select: false,
     },
     name: {
       type: String,
@@ -45,7 +45,7 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           return Promise.reject(new UnauthorizedError('Неправильные почта или пароль'));
         }
 
-        return user; // теперь user доступен
+        return user;
       });
     });
 };

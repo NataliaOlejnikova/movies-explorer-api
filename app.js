@@ -22,7 +22,7 @@ const app = express();
 app.use(cors({ origin: ORIGINS }));
 app.use(express.json());
 app.use(requestLogger);
-app.use(LIMITER); // AntiDOS for all requests
+app.use(LIMITER);
 app.use(helmet());
 app.use(cookieParser());
 
