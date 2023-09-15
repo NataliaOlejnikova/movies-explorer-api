@@ -1,30 +1,37 @@
+// authorization
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET, COOKIE_KEY } = require('../config/settings');
-const { UnauthorizedError } = require('../utils/errors/401-Unauthorized');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const { errorMessages } = require('../utils/constants');
 
-const authMiddleware = (req, _, next) => {
-  const { authorization } = req.headers;
-  let token = authorization ? authorization.replace('Bearer ', '') : null;
+require('dotenv').config();
 
-  if (!token) {
-    if (req.cookies && COOKIE_KEY in req.cookies) {
-      token = req.cookies[COOKIE_KEY];
-    } else {
-      return next(new UnauthorizedError('Необходима авторизация'));
-    }
-  }
+const { JWT_SECRET, NODE_ENV } = process.env;
 
-  let payload;
-
-  try {
-    payload = jwt.verify(token, JWT_SECRET);
-  } catch (err) {
-    return next(new UnauthorizedError('Необходима авторизация'));
-  }
-
-  req.user = payload; // записываем пейлоуд в объект запроса
-
-  return next(); // пропускаем запрос дальше
+const handleAuthError = (next) => {
+  next(new UnauthorizedError(errorMessages.auth));
 };
 
-module.exports = authMiddleware;
+const tokenVerify = (token) => {
+  try {
+    return jwt.verify(
+      token,
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+    );
+  } catch (err) {
+    return '';
+  }
+};
+
+module.exports = (req, res, next) => {
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    return handleAuthError(next);
+  }
+  const payload = tokenVerify(token);
+  if (!payload) {
+    handleAuthError(next);
+  }
+  req.user = payload;
+  return next();
+};

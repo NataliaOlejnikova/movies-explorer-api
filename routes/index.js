@@ -1,17 +1,20 @@
-const router = require('express').Router();
-const { createUser, login, signOut } = require('../controllers/users');
+// index routers
+const users = require('./users');
+const movies = require('./movies');
+const authorization = require('./authorization');
 const auth = require('../middlewares/auth');
-const { NotFoundError } = require('../utils/errors/404-NotFound');
-const { validateCreateUser, validateLogin } = require('../middlewares/validation');
+const NotFoundError = require('../errors/NotFoundError');
+const { errorMessages } = require('../utils/constants');
 
-router.use('/users', auth, require('./users'));
-router.use('/movies', auth, require('./movies'));
+module.exports = function (app) {
+  app.use('/', authorization);
 
-router.use('/signout', signOut);
-router.use('/signup', validateCreateUser, createUser);
-router.use('/signin', validateLogin, login);
+  app.use(auth);
 
-router.use('*', auth, () => {
-  throw new NotFoundError('Не найдено');
-});
-module.exports = router;
+  app.use('/users', users);
+  app.use('/movies', movies);
+
+  app.all('*', (req, res, next) => {
+    next(new NotFoundError(errorMessages.incorrectPath));
+  });
+};

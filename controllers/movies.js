@@ -1,17 +1,19 @@
-const { ValidationError } = require('mongoose').Error;
+// MOVIES
 const Movie = require('../models/movie');
-const { BadRequestError } = require('../utils/errors/400-BadRequest');
-const { ForbiddenError } = require('../utils/errors/403-Forbidden');
-const { NotFoundError } = require('../utils/errors/404-NotFound');
-const { STATUS_CREATED } = require('../utils/globalVars');
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const ValidationError = require('../errors/ValidationError');
+const { errorMessages } = require('../utils/constants');
 
-const createMovie = (req, res, next) => {
+module.exports.getMovies = (req, res, next) => {
+  Movie.find({})
+    .then((movies) => res.send(movies))
+    .catch(next);
+};
+
+module.exports.createMovie = (req, res, next) => {
   const {
-    country, director, duration, year, description, image, trailerLink,
-    thumbnail, movieId, nameRU, nameEN,
-  } = req.body;
-
-  Movie.create({
+    movieId,
     country,
     director,
     duration,
@@ -20,51 +22,43 @@ const createMovie = (req, res, next) => {
     image,
     trailerLink,
     thumbnail,
-    movieId,
     nameRU,
     nameEN,
-    owner: req.user._id,
+  } = req.body;
+  const owner = req.user._id;
+  Movie.create({
+    movieId,
+    country,
+    director,
+    duration,
+    year,
+    description,
+    owner,
+    image,
+    trailerLink,
+    thumbnail,
+    nameRU,
+    nameEN,
   })
-    .then((newMovie) => newMovie.populate('owner')
-      .then((data) => res.status(STATUS_CREATED).send(data)))
+    .then((movie) => res.send(movie))
     .catch((err) => {
-      if (err instanceof ValidationError) {
-        next(new BadRequestError('Переданы некорректные данные'));
+      if (err.name === 'ValidationError') {
+        next(new ValidationError(errorMessages.createMovie));
       } else {
         next(err);
       }
     });
 };
 
-const getMovies = (req, res, next) => {
-  const owner = req.user._id;
-  Movie.find({ owner }).populate(['owner'])
-    .then((movie) => res.send(movie))
-    .catch((err) => next(err));
-};
-
-const deleteMovie = (req, res, next) => {
-  const { movieId } = req.params;
-  const { _id: userId } = req.user;
-
-  Movie.findById(movieId)
-    .orFail(new NotFoundError('Видео с таким id не найдено'))
+module.exports.deleteMovie = (req, res, next) => {
+  Movie.findById(req.params._id)
     .then((movie) => {
-      if (!movie.owner.equals(userId)) {
-        return next(new ForbiddenError('Вы не можете удалить это видео'));
+      if (!movie) next(new NotFoundError(errorMessages.movieNotFound));
+      if (req.user._id === movie.owner.toString()) {
+        return movie.remove();
       }
-
-      return Movie.deleteOne(movie)
-        .then(() => {
-          res.send({ message: 'Видео успешно удалено' });
-        })
-        .catch(next);
+      return next(new ForbiddenError(errorMessages.removeMovie));
     })
+    .then((movie) => res.send(movie))
     .catch(next);
-};
-
-module.exports = {
-  createMovie,
-  getMovies,
-  deleteMovie,
 };

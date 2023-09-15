@@ -1,32 +1,54 @@
-const { errors } = require('celebrate');
+/* eslint-disable import/no-extraneous-dependencies */
+// app
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const cors = require('cors');
-const {
-  PORT,
-  ORIGINS,
-  MONGO_DB,
-  LIMITER,
-} = require('./config/settings');
-const errorHandler = require('./middlewares/errorHandler');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
-const router = require('./routes');
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const errorHandler = require('./errors/errorHandler');
 
-mongoose.set('strictQuery', false);
-mongoose.connect(MONGO_DB);
+require('dotenv').config();
+
+const { PORT = 3000, DATABASE = 'mongodb://127.0.0.1:27017/moviesdb' } = process.env;
 
 const app = express();
+const routes = require('./routes');
+const limiter = require('./middlewares/limiter');
+const cors = require('./middlewares/cors');
+const { errorMessages } = require('./utils/constants');
 
-app.use(cors({ origin: ORIGINS }));
-app.use(express.json());
-app.use(requestLogger);
-app.use(LIMITER);
-app.use(helmet());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(helmet());
 
-app.use(router);
+app.use(cors);
+
+mongoose.connect(DATABASE, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  autoIndex: true,
+});
+
+app.use(requestLogger);
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error(errorMessages.crash);
+  }, 0);
+});
+
+app.use('/', limiter);
+
+routes(app);
+
+// обработка ошибок
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});
