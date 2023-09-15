@@ -19,7 +19,7 @@ const NotFoundError = require('../errors/not-found-err');
 routes.post('/signup', express.json(), signUpValidation, createUser);
 routes.post('/signin', express.json(), signInValidation, login);
 
-/*routes.use('/users', auth, usersRouter);*/
+routes.use('/users', auth, usersRouter);
 /*routes.use('/movies', auth, movieRouter);*/
 
 routes.use('*', auth, (req, res, next) => {

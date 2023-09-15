@@ -6,8 +6,8 @@ const {
 } = require('../controllers/user');
 const { patchUserMeValidation } = require('../middlewares/validatons');
 
-userRoutes.get('/users/me', getUserMe);
+userRoutes.get('/me', getUserMe);
 
-userRoutes.patch('/users/me', express.json(), patchUserMeValidation, patchUserMe);
+userRoutes.patch('/me', express.json(), patchUserMeValidation, patchUserMe);
 
 module.exports = userRoutes;
