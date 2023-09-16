@@ -6,6 +6,7 @@ const corsOptions = {
     'http://react-mesto-backend.nomoreparties.co',
     'https://movies-frontend-nataolej.nomoredomainsicu.ru',
     'http://movies-frontend-nataolej.nomoredomainsicu.ru',
+    'https://api.nomoreparties.co/beatfilm-movies'
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
