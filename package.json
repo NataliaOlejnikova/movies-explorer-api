@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/ViktoryPolischuk/movies-explorer-api.git"
+    "url": "git+ssh://git@github.com/NataliaOlejnikova/movies-explorer-api.git"
   },
   "author": "Natalia Olejnikova",
   "license": "ISC",
