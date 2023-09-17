@@ -1,6 +1,7 @@
-## Ссылки на проект
+# movies-explorer-api
+movies-explorer-api
 
-IP 158.160.106.125
+Ссылка на проект:
+Публичный IP 158.160.106.125
 
-Backend https://react-mesto-backend.nomoreparties.co
-
+Backend: https://react-mesto-backend.nomoreparties.co  (ссылка рабочая)

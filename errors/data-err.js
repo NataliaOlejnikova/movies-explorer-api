@@ -1,7 +1,8 @@
-class BadRequestError extends Error {
+class DataError extends Error {
   constructor(message) {
     super(message);
     this.statusCode = 400;
   }
 }
-module.exports = BadRequestError;
+
+module.exports = DataError;
