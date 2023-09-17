@@ -1,18 +1,17 @@
 {
   "name": "movies-explorer-api",
   "version": "1.0.0",
-  "description": " Дипломный проект Яндекс.Практикум",
+  "description": " Дипломный проект Movies бэкенд",
   "main": "index.js",
   "scripts": {
+    "lint": "npx eslint .",
     "start": "node app.js",
-    "dev": "nodemon app.js",
-    "lint": "npx eslint ."
+    "dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NataliaOlejnikova/movies-explorer-api"
+    "url": "git+ssh://git@github.com/ViktoryPolischuk/movies-explorer-api.git"
   },
-  "keywords": [],
   "author": "Natalia Olejnikova",
   "license": "ISC",
   "bugs": {
@@ -20,24 +19,25 @@
   },
   "homepage": "https://github.com/NataliaOlejnikova/movies-explorer-api#readme",
   "devDependencies": {
-    "eslint": "^8.12.0",
+    "eslint": "^8.43.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.25.4",
-    "nodemon": "^2.0.15"
+    "eslint-plugin-import": "^2.27.5",
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
     "celebrate": "^15.0.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.0",
-    "express": "^4.17.3",
-    "express-rate-limit": "^6.3.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.9.0",
     "express-winston": "^4.2.0",
     "helmet": "^7.0.0",
-    "joi": "^17.6.0",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.8",
-    "validator": "^13.7.0",
-    "winston": "^3.6.0"
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.4.2",
+    "validator": "^13.11.0",
+    "winston": "^3.10.0"
   }
 }
