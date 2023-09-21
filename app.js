@@ -17,6 +17,7 @@ mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:2701
   useUnifiedTopology: true,
   autoIndex: true,
 });
+mongoose.set('strictQuery',true);
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 
