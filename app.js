@@ -17,7 +17,7 @@ mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:2701
   useUnifiedTopology: true,
   autoIndex: true,
 });
-mongoose.set('strictQuery',true);
+mongoose.set('strictQuery', false);
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 
@@ -36,7 +36,3 @@ app.use(errorLogger);
 app.use(errors());
 
 app.use(errorHandle);
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
