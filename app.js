@@ -9,6 +9,8 @@ const cors = require('cors');
 const { errors } = require('celebrate');
 const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
+mongoose.set("strictQuery", false);
+
 
 const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
