@@ -9,8 +9,8 @@ const cors = require('cors');
 const { errors } = require('celebrate');
 const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
-mongoose.set("strictQuery", false);
 
+mongoose.set("strictQuery", false);
 
 const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
 
@@ -37,7 +37,3 @@ app.use(errorLogger);
 app.use(errors());
 
 app.use(errorHandle);
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
