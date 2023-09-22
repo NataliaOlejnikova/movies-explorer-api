@@ -11,8 +11,6 @@ const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
 
 const { PORT = 3000, NODE_ENV, DB_PROD } = process.env;
-mongoose.set('strictQuery', false);
-
 mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
