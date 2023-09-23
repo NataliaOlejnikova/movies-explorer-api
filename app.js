@@ -10,10 +10,6 @@ const { errors } = require('celebrate');
 const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
 
-mongoose.set("strictQuery", true);
-
-mongoose.connect(process.env.MONGO_URL);
-
 mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
