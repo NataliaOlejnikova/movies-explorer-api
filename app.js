@@ -10,7 +10,7 @@ const { errors } = require('celebrate');
 const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
 
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", true);
 
 mongoose.connect(process.env.MONGO_URL);
 
