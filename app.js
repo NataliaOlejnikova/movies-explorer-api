@@ -10,7 +10,7 @@ const { errors } = require('celebrate');
 const routes = require('./routes');
 const errorHandle = require('./errors/handle-errors');
 
-mongoose.connect(NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
+mongoose.connect(process.env.NODE_ENV === 'production' ? DB_PROD : 'mongodb://127.0.0.1:27017/bitfilmsdb', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   autoIndex: true,
@@ -34,6 +34,3 @@ app.use(errors());
 
 app.use(errorHandle);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
